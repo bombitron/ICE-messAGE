@@ -1,24 +1,71 @@
+% LTeX: language=es
+
 % En esta carpeta van los archivos que se generan al compilar el .tex (el pdf podemos moverlo a docs/ en vez de dejarlo en docs/latexFase0)
 % Lo hago porque se generan como 4 o 5 archivos 
 
-
 \documentclass{article}
-\title{Phase 0}
-\date{2026-02-25}
-\author{gafo \and bombitron \and adrianisabal}
+\usepackage{graphicx} % Required for inserting images
+\title{Fase 0}
+\author{Sergio Gafo Sabín \and Ander Íñiguez Bustillo \and Adrian Isábal Martín}
 
 \begin{document}
-  \pagenumbering{gobble} % Quito el número de la primera página (portada)
-  \maketitle %Creo el título, especificado en la zona de preámbulo
-  \newpage %Salto de página
-  \pagenumbering{arabic} % Volvemos a meter los numeritos
-  Hello worldd!! % EL texto sin más, lo plasma en el documento
-  \section{Requiriments Specification}% Sección (hace 1 - Requirements Specification)
-  Our 
-  Lolete lolero
-  \subsection{Prueba1.1} % Subsección (hace 1.1 - Prueba1.1)
-  balatro balatrez
-  \subsubsection{Prueba1.1.1}
-  torete torero
+    \pagenumbering{gobble} % Quito el número de la primera página (portada)
+    \maketitle %Creo el título, especificado en la zona de preámbulo
+    \newpage %Salto de página
+    \pagenumbering{arabic} % Volvemos a meter los numeritos
+    \section{Especificación de requisitos}
+    \section{Arquitectura del sistema}
+    El sistema de comunicaciones de la aplicación es una implementación del protocolo ICE (Interactive Connectivity Establishment, RFC 8445) para intentar establecer una conexión P2P siempre que sea posible para evitar al máximo las conexiones por servidor, pero que también usuarios tras una red NAT simétrica (que imposibilita las conexiones P2P) puedan utilizar la aplicación. Este protocolo cuenta con varios componentes principales además de la aplicación cliente:
+    
+    \subsection{Componentes}
+    \subsubsection{Servidor tracker}
+    Actúa como punto de encuentro entre peers. Su función solo es de control: gestiona las conexiones de los clientes, mantiene un registro de usuarios activos y retransmite los mensajes de señalización entre ellos. Es decir, su único objetivo es establecer una conexión entre dos clientes que lo soliciten. \vspace{1em}
+    
+    Protocolos:
+    
+    \begin{itemize}
+       \item Capa de transporte: TCP
+       \item Capa de aplicación: WebSockets
+       \item Capa de seguridad: TLS
+    \end{itemize}
 
+    
+    \subsubsection{Servidor STUN}
+    Servidor auxiliar que permite a un cliente descubrir su dirección y puerto públicos tal como son vistos desde Internet. Esta información es necesaria para que otros peers puedan intentar conectarse con él. \vspace{1em}
+    
+    Protocolos:
+    
+    \begin{itemize}
+       \item Capa de transporte: UDP
+       \item Capa de aplicación: STUN
+       \item Capa de seguridad: DTLS
+    \end{itemize}
+    
+    \subsubsection{Servidor TURN}
+    Server de retransmisión de los datos para cuando las conexiones P2P son imposibles por topología de alguna de las redes de los host. El cliente reserva una dirección y puerto en el servidor TURN, y todos los mensajes cifrados se envían a este servidor, que los reenvía al otro peer. \vspace{1em}
+    
+    Protocolos:
+    
+    \begin{itemize}
+       \item Capa de transporte: TCP
+       \item Capa de aplicación: TURN
+       \item Capa de seguridad: TLS
+    \end{itemize}
+    
+    \subsubsection{Host de P2P}
+    En los casos en los que sea posible (cosa que cada dispositivo identificará primero verificando con el servidor STUN si se encuentra en una red que admita conexiones P2P, y después verificando si el peer con el que se quiere conectar también admite este tipo de conexiones y tiene dirección IP:puerto obtenibles via tracker) los clientes intercambiarán mensajes vía conexiones P2P. Estas conexiones funcionarán mediante: \vspace{1em}
+    
+    Protocolos:
+    
+    \begin{itemize}
+       \item Capa de transporte: UDP
+       \item Capa de aplicación: SCTP
+       \item Capa de seguridad: DTLS
+    \end{itemize}
+
+    \section{Interfaz de usuario}
+    \section{Estructura de ficheros}
+    \section{Esquemas de la BBDD}
+    \section{Protocolo de comunicaciones}
+    
 \end{document}
